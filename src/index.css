@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-white font-sans antialiased overflow-x-hidden selection:bg-primary/30 selection:text-primary;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 85% 30%, rgba(239, 68, 68, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-card backdrop-blur-md border border-cardBorder shadow-xl;
+  }
+  
+  .glass-button {
+    @apply relative overflow-hidden transition-all duration-300 active:scale-95;
+  }
+  
+  .glass-button::before {
+    content: '';
+    @apply absolute inset-0 bg-white/10 opacity-0 transition-opacity duration-300;
+  }
+  
+  .glass-button:hover::before {
+    @apply opacity-100;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(255,255,255,0.3);
+  }
+  
+  .glow-primary {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+  }
+
+  .glow-critical {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  }
+  
+  /* Custom Scrollbar for dark theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(11, 15, 25, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Leaflet Map Dark Mode Override */
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
