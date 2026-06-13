@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Activity, Users, ShieldCheck, AlertTriangle, Search, Filter, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { PageWrapper } from '../components/PageWrapper';
 import { Card } from '../components/Card';
-import { Badge, type Severity } from '../components/Badge';
+import { Badge} from '../components/Badge';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 export const OperatorDashboard: React.FC = () => {
@@ -68,17 +68,7 @@ const statCards = [
   },
 ];
 
-  type Incident = {
-    id: string;
-    type: string;
-    priority: number;
-    severity: Severity;
-    status: 'Open' | 'Assigned' | 'Resolved';
-    location: string;
-    time: string;
-  };
 
-  
 
   return (
     <PageWrapper className="h-full flex flex-col">
@@ -105,7 +95,7 @@ const statCards = [
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {statsCards.map((stat, idx) => (
+        {statCards.map((stat, idx) => (
           <Card key={idx} glowEffect={stat.glow} className={`p-5 ${stat.glow ? 'border-critical/30 bg-critical/5' : ''}`}>
             <div className="flex justify-between items-start mb-2">
               <div className={`p-2 rounded-lg bg-white/5 ${stat.color}`}>
