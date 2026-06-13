@@ -18,11 +18,11 @@ export const OperatorDashboard: React.FC = () => {
 
 const fetchIncidents = async () => {
   try {
-    const res = await API.get("/incidents");
+    const res = await API.get("/incidents/");
 
     console.log("Incidents:", res.data);
 
-    setIncidents(res.data.incidents);
+    setIncidents(res.data.incidents || []);
   } catch (error) {
     console.error(error);
   }
@@ -71,6 +71,7 @@ const statCards = [
 
 
   return (
+    
     <PageWrapper className="h-full flex flex-col">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
@@ -261,3 +262,4 @@ const statCards = [
     </PageWrapper>
   );
 };
+

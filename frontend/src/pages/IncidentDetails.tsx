@@ -4,24 +4,35 @@ import { ArrowLeft, Clock, MapPin, AlertTriangle, Activity, Camera, ShieldCheck,
 import { PageWrapper } from '../components/PageWrapper';
 import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
-
+import { useEffect, useState } from "react";
+import API from "../services/api";
 export const IncidentDetails: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Mock data for the specific incident
-  const incident = {
-    id: id || '8492',
-    type: 'Medical',
-    priority: 98,
-    severity: 'Critical' as const,
-    status: 'Open',
-    location: 'Rajiv Chowk Metro Station, Gate 2',
-    reporter: 'Anonymous (Verified Device)',
-    time: '2 minutes ago',
-    description: 'Passenger collapsed on platform. Unresponsive, possible cardiac arrest. Crowd gathering, need immediate assistance.',
-  };
+ const [incident, setIncident] = useState<any>(null);
+  useEffect(() => {
+  fetchIncident();
+}, []);
 
+const fetchIncident = async () => {
+  try {
+    const res = await API.get(`/incidents/${id}`);
+
+    console.log(res.data);
+
+    setIncident(res.data.incident);
+  } catch (error) {
+    console.error(error);
+  }
+};
+if (!incident) {
+  return (
+    <PageWrapper>
+      <div>Loading Incident...</div>
+    </PageWrapper>
+  );
+}
   return (
     <PageWrapper className="max-w-7xl mx-auto space-y-6">
       
@@ -33,7 +44,7 @@ export const IncidentDetails: React.FC = () => {
           </button>
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl font-bold font-mono">#INC-{incident.id}</h1>
+              <h1 className="text-2xl font-bold font-mono">{incident._id}</h1>
               <Badge severity={incident.severity} />
               <span className={`px-2 py-0.5 rounded text-xs font-bold ${incident.status === 'Open' ? 'bg-critical/20 text-critical border border-critical/50' : 'bg-primary/20 text-primary border border-primary/50'}`}>
                 {incident.status.toUpperCase()}
@@ -72,7 +83,7 @@ export const IncidentDetails: React.FC = () => {
             <div className="grid md:grid-cols-3 gap-6 mb-6">
               <div>
                 <div className="text-sm text-gray-400 mb-1">Priority Score</div>
-                <div className="text-4xl font-black text-critical">{incident.priority}<span className="text-xl text-critical/50">/100</span></div>
+                <div className="text-4xl font-black text-critical">{incident.priorityScore}<span className="text-xl text-critical/50">/100</span></div>
               </div>
               <div>
                 <div className="text-sm text-gray-400 mb-1">Detected Type</div>
