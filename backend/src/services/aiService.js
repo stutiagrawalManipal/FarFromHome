@@ -52,3 +52,74 @@ return result;
         };
     }
 };
+const axios = require("axios");
+
+async function analyzeEmergency(description) {
+  const prompt = `
+You are an emergency triage officer.
+
+Return ONLY valid JSON.
+
+{
+  "priorityScore": number,
+  "severity": "Critical|High|Medium|Low",
+  "emergencyType": "Medical|Crime|Fire|Disaster|Women Safety",
+  "reasoning": "short reason"
+}
+
+Emergency Report:
+${description}
+`;
+
+  const response = await axios.post(
+    "http://localhost:11434/api/generate",
+    {
+      model: "llama3.1:8b",
+      prompt,
+      stream: false
+    }
+  );
+
+  return response.data.response;
+}
+
+module.exports = { analyzeEmergency };
+import axios from "axios";
+
+export async function analyzeEmergency(description) {
+  const prompt = `
+You are an emergency triage officer.
+
+Analyze the emergency report.
+
+Priority Score Rules:
+
+0-25 = Low
+26-50 = Medium
+51-75 = High
+76-100 = Critical
+
+Return ONLY valid JSON.
+
+{
+  "priorityScore": number,
+  "severity": "Critical|High|Medium|Low",
+  "emergencyType": "Medical|Crime|Fire|Disaster|Women Safety",
+  "reasoning": "short reason"
+}
+
+Emergency Report:
+${description}
+`;
+
+  const response = await axios.post(
+    "http://localhost:11434/api/generate",
+    {
+      model: "llama3.1:8b",
+      prompt,
+      stream: false,
+    }
+  );
+
+  return JSON.parse(response.data.response);
+}
