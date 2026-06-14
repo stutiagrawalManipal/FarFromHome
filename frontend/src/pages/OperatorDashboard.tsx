@@ -12,6 +12,7 @@ export const OperatorDashboard: React.FC = () => {
   const [incidents, setIncidents] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
  useEffect(() => {
   fetchIncidents();
   fetchStats();
@@ -79,6 +80,19 @@ const statCards = [
   },
 ];
 
+const filteredIncidents = incidents.filter((incident) => {
+  const search = searchQuery.toLowerCase();
+
+  return (
+    incident._id?.toLowerCase().includes(search) ||
+    incident.type?.toLowerCase().includes(search) ||
+    incident.status?.toLowerCase().includes(search) ||
+    incident.severity?.toLowerCase().includes(search) ||
+    `${incident.latitude},${incident.longitude}`
+      .toLowerCase()
+      .includes(search)
+  );
+});
 
 
   return (
@@ -145,70 +159,78 @@ const statCards = [
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-  {incidents.map((incident, idx) => (
-    <motion.tr
-      key={incident._id}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: idx * 0.05 }}
-      className="hover:bg-white/[0.02] transition-colors group cursor-pointer"
-      onClick={() => navigate(`/incident/${incident._id}`)}
-    >
-      <td className="p-4 font-mono text-gray-300">
-        {incident._id?.slice(-6)}
+  {filteredIncidents.length === 0 ? (
+    <tr>
+      <td
+        colSpan={7}
+        className="p-8 text-center text-gray-500"
+      >
+        No incidents found
       </td>
+    </tr>
+  ) : (
+    filteredIncidents.map((incident, idx) => (
+      <motion.tr
+        key={incident._id}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: idx * 0.05 }}
+        className="hover:bg-white/[0.02] transition-colors group cursor-pointer"
+        onClick={() => navigate(`/incident/${incident._id}`)}
+      >
+        <td className="p-4 font-mono text-gray-300">
+          {incident._id?.slice(-6)}
+        </td>
 
-      <td className="p-4 font-medium">
-        {incident.type}
-      </td>
+        <td className="p-4 font-medium">
+          {incident.type}
+        </td>
 
-      <td className="p-4">
-        <div className="flex items-center gap-2">
-          <Badge severity={incident.severity} />
+        <td className="p-4">
+          <div className="flex items-center gap-2">
+            <Badge severity={incident.severity} />
 
-          <span className="text-xs text-gray-500 font-mono">
-            {incident.priorityScore}/100
+            <span className="text-xs text-gray-500 font-mono">
+              {incident.priorityScore}/100
+            </span>
+          </div>
+        </td>
+
+        <td className="p-4 text-gray-300">
+          <span
+            className={`flex items-center gap-1.5 ${
+              incident.status === "Open"
+                ? "text-critical"
+                : incident.status === "Assigned"
+                ? "text-primary"
+                : "text-gray-500"
+            }`}
+          >
+            {incident.status === "Open" && (
+              <span className="w-1.5 h-1.5 rounded-full bg-critical animate-pulse" />
+            )}
+
+            {incident.status}
           </span>
-        </div>
-      </td>
+        </td>
 
-      <td className="p-4 text-gray-300">
-        <span
-          className={`flex items-center gap-1.5 ${
-            incident.status === "Open"
-              ? "text-critical"
-              : incident.status === "Assigned"
-              ? "text-primary"
-              : "text-gray-500"
-          }`}
-        >
-          {incident.status === "Open" && (
-            <span className="w-1.5 h-1.5 rounded-full bg-critical animate-pulse" />
-          )}
+        <td className="p-4 text-gray-400 truncate max-w-[150px]">
+          {incident.latitude?.toFixed(4)},{" "}
+          {incident.longitude?.toFixed(4)}
+        </td>
 
-          {incident.status}
-        </span>
-      </td>
+        <td className="p-4 text-gray-400">
+          {new Date(incident.createdAt).toLocaleString()}
+        </td>
 
-      <td className="p-4 text-gray-400 truncate max-w-[150px]">
-        {incident.latitude?.toFixed(4)},
-        {" "}
-        {incident.longitude?.toFixed(4)}
-      </td>
-
-      <td className="p-4 text-gray-400">
-        {new Date(
-          incident.createdAt
-        ).toLocaleString()}
-      </td>
-
-      <td className="p-4 text-right">
-        <button className="text-gray-500 group-hover:text-primary transition-colors p-1">
-          <ArrowUpRight className="w-4 h-4" />
-        </button>
-      </td>
-    </motion.tr>
-  ))}
+        <td className="p-4 text-right">
+          <button className="text-gray-500 group-hover:text-primary transition-colors p-1">
+            <ArrowUpRight className="w-4 h-4" />
+          </button>
+        </td>
+      </motion.tr>
+    ))
+  )}
 </tbody>
             </table>
           </div>
