@@ -11,9 +11,11 @@ export const OperatorDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [incidents, setIncidents] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
+  const [categories, setCategories] = useState<any[]>([]);
  useEffect(() => {
   fetchIncidents();
   fetchStats();
+  fetchCategories();
 }, []);
 
 const fetchIncidents = async () => {
@@ -35,6 +37,15 @@ const fetchStats = async () => {
     console.log("Stats:", res.data);
 
     setStats(res.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const fetchCategories = async () => {
+  try {
+    const res = await API.get("/dashboard/categories");
+    setCategories(res.data);
   } catch (error) {
     console.error(error);
   }
@@ -235,25 +246,35 @@ const statCards = [
             </div>
             
             <div>
-              <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Category Breakdown</h3>
-              <div className="space-y-3">
-                {[
-                  { name: 'Medical', count: 45, width: '60%', color: 'bg-primary' },
-                  { name: 'Fire', count: 12, width: '20%', color: 'bg-high' },
-                  { name: 'Crime', count: 34, width: '45%', color: 'bg-critical' },
-                ].map((cat, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-300">{cat.name}</span>
-                      <span className="font-mono text-gray-500">{cat.count}</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                      <div className={`h-full ${cat.color}`} style={{ width: cat.width }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+  <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">
+    Category Breakdown
+  </h3>
+
+  <div className="space-y-3">
+    {categories.map((cat, idx) => (
+      <div key={idx} className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-300">
+            {cat._id || "Other"}
+          </span>
+
+          <span className="font-mono text-gray-500">
+            {cat.count}
+          </span>
+        </div>
+
+        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary"
+            style={{
+              width: `${Math.min(cat.count * 10, 100)}%`,
+            }}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
           </div>
         </Card>
